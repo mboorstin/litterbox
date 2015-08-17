@@ -1,0 +1,10 @@
+<template name="bathroom">
+    <h3>{{description}}</h3>
+    <ul>
+        {{#each stalls}}
+            <li>
+                {{> stall get_stall this}}
+            </li>
+        {{/each}}
+    </ul>
+</template>
