@@ -15,10 +15,6 @@ db = SQLAlchemy(app)
 def index():
     return render_template('index.html')
 
-@app.route('/hello')
-def hello():
-    return render_template('hello.html')
-
 @app.route('/api/v1.0/stalls', methods=['GET'])
 def get_stalls():
     session = db.session()
