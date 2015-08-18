@@ -46,8 +46,25 @@ def update_stalls():
         session.add(Visit(stall_id=stall.id))
         stall.status = request.json['status']
         session.commit()
-
     return jsonify({'success': True}), 201
+
+@app.route('/api/v1.0/stall/<stall_id>', methods=['GET'])
+def get_visits(stall_id):
+    try:
+        stall_id = int(stall_id)
+    except ValueError:
+        abort(400)
+
+    session = db.session()
+    stall = session.query(Stall).get(stall_id)
+    if not stall:
+        abort(400)
+
+    response = make_response()
+    visits = stall.visits.order_by(Visit.id.desc()).all()
+    values = [visit.to_json() for visit in visits]
+    response.data = json.dumps(values)
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)
