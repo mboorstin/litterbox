@@ -13,5 +13,74 @@
       <div id="content"></div>
     </div>
     <!-- scripts -->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.0/react.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.0/JSXTransformer.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script type="text/jsx">
+	/**
+	* @jsx React.DOM
+	*/
+	var Stalls = React.createClass({
+		getInitialState: function() {
+			return {data: []}
+		},
+		loadCommentsFromServer: function() {
+			var stalls = $.ajax({
+				type: 'GET',
+				url: '/api/v1.0/stalls',
+				dataType: 'json',
+				success: function (data) {
+					this.setState({data: data});
+				}.bind(this),
+				error: function (xhr, status, err) {
+					console.error("/api/v1.0/stalls", status, err.toString());
+				}.bind(this)
+			});
+		},                
+		componentWillMount: function() {
+			this.loadCommentsFromServer();
+			setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+		},
+		render: function() {
+			return (
+				<div className="stalls">
+				<h1>Stalls</h1>
+				<StallList data={this.state.data}/>
+				</div>
+				);
+		}
+	});
+
+	var StallList = React.createClass({
+		render: function() {
+			var stalls = this.props.data.map(function(stall) {
+				return <Stall stall={stall}></Stall>;
+			});
+
+			return (
+				<div className="StallList">
+					{stalls}
+				</div>
+			);
+		}
+	});
+
+   var Stall = React.createClass({
+		render: function() {
+			return (
+				<div className="Stall">
+				<h1>Stall</h1>
+				<h2>{this.props.stall.status}</h2>
+				<h2>Yo.</h2>
+				</div>
+			);
+		}
+	});
+
+	React.renderComponent(
+		<Stalls pollInterval={1000}></Stalls>,
+		document.getElementById('content')
+	);
+	</script>
   </body>
 </html>
