@@ -67,11 +67,14 @@
 
    var Stall = React.createClass({
 		render: function() {
+			var occupied = "Free";
+			if(this.props.stall.status){
+				occupied = "Occupied";
+			}
 			return (
 				<div className="Stall">
-				<h1>Stall</h1>
-				<h2>{this.props.stall.status}</h2>
-				<h2>Yo.</h2>
+				<h1>{this.props.stall.name}</h1>
+				<h2>{occupied}</h2>
 				</div>
 			);
 		}
