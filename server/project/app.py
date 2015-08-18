@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from flask import Flask, jsonify, make_response, render_template, request
+from flask import Flask, abort, jsonify, make_response, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from models import Stall, Visit, Base
