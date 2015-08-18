@@ -12,7 +12,7 @@ class Stall(Base):
     name = Column(String)
 
     status = Column(Boolean)
-    visits = relationship('Visit', backref='stall')
+    visits = relationship('Visit', lazy='dynamic', backref='stall')
 
     def to_json(self):
         return {

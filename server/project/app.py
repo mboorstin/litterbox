@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from flask import Flask, jsonify, make_response, render_template, request
@@ -36,8 +37,16 @@ def update_stalls():
     stall = session.query(Stall).get(request.json['stall_id'])
     if not stall:
         abort(400)
-    stall.status = request.json['status']
-    session.commit()
+    if stall.status and not request.json['status']:
+        print stall.visits.order_by(Visit.id.desc()).first().id
+        stall.visits.order_by(Visit.id.desc()).first().exited_at = datetime.datetime.now()
+        stall.status = request.json['status']
+        session.commit()
+    elif not stall.status and request.json['status']:
+        session.add(Visit(stall_id=stall.id))
+        stall.status = request.json['status']
+        session.commit()
+
     return jsonify({'success': True}), 201
 
 if __name__ == '__main__':
