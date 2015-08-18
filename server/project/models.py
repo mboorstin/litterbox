@@ -19,7 +19,6 @@ class Stall(Base):
             'id': self.id,
             'name': self.name,
             'status': self.status,
-            'num_visits': len(self.visits),
         }
 
 class Visit(Base):
@@ -30,10 +29,14 @@ class Visit(Base):
     exited_at = Column(DateTime, default=datetime.datetime.now)
 
     def to_json(self):
+        def unix_time(dt):
+            epoch = datetime.datetime.utcfromtimestamp(0)
+            delta = dt - epoch
+            return int(delta.total_seconds())
         return {
             'id': self.id,
             'stall_id': self.stall_id,
-            'entered_at': self.entered_at.isoformat(),
-            'exited_at': self.exited_at.isoformat(),
-            'duration': (self.exited_at - self.entered_at).total_seconds(),
+            'entered_at': unix_time(self.entered_at),
+            'exited_at': unix_time(self.exited_at),
+            'duration': int((self.exited_at - self.entered_at).total_seconds()),
         }
