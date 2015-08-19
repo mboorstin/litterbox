@@ -24,7 +24,7 @@
 		getInitialState: function() {
 			return {data: []}
 		},
-		loadCommentsFromServer: function() {
+		loadStallsFromServer: function() {
 			var stalls = $.ajax({
 				type: 'GET',
 				url: '/api/v1.0/stalls',
@@ -38,8 +38,8 @@
 			});
 		},                
 		componentWillMount: function() {
-			this.loadCommentsFromServer();
-			setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+			this.loadStallsFromServer();
+			setInterval(this.loadStallsFromServer, this.props.pollInterval);
 		},
 		render: function() {
 			return (
