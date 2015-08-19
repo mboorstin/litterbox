@@ -19,6 +19,7 @@ while True:
     while True:
         for c in xbee.read():
             if ord(c) == 0x7E and len(data) > 1:
+                print data
                 conn = HTTPConnection(urlparts.netloc, urlparts.port or 80)
                 data = json.dumps({'raw_data': base64.b64encode(''.join(data))})
                 conn.request("POST", urlparts.path, data, headers)
