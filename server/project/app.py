@@ -1,10 +1,13 @@
 import datetime
 import json
+import base64
+import struct
 
-from flask import Flask, abort, jsonify, make_response, render_template, request
+from flask import Flask, abort, escape, jsonify, make_response, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from models import Stall, Visit, Base
+from models import Debug, Stall, Visit, Base
+from XBeeParser import sender_and_status
 
 SECRET = '1234567890'
 
@@ -48,6 +51,35 @@ def update_stalls():
         session.commit()
     return jsonify({'success': True}), 201
 
+# raw_data is base64ified
+# Doing JSON even for a single parameter to make life easier for later
+@app.route('/api/v1.5/stalls', methods=['POST'])
+def update_stalls_from_raw():
+    required = ['raw_data']
+    if not request.json or any(x not in request.json for x in required):
+        abort(400)
+
+    message_str = base64.b64decode(request.json['raw_data'])
+    message_bytes = bytearray()
+    message_bytes.extend(message_str)
+    sender, status = sender_and_status(message_bytes)
+    stall_id = struct.unpack('>I', sender[4:])[0]
+
+    session = db.session()
+    stall = session.query(Stall).get(stall_id)
+    if not stall:
+        abort(400)
+    if stall.status and not status:
+        print stall.visits.order_by(Visit.id.desc()).first().id
+        stall.visits.order_by(Visit.id.desc()).first().exited_at = datetime.datetime.now()
+        stall.status = False
+        session.commit()
+    elif not stall.status and status:
+        session.add(Visit(stall_id=stall_id))
+        stall.status = True
+        session.commit()
+    return jsonify({'success': True}), 201
+
 @app.route('/api/v1.0/stall/<stall_id>', methods=['GET'])
 def get_visits(stall_id):
     try:
@@ -65,6 +97,25 @@ def get_visits(stall_id):
     values = [visit.to_json() for visit in visits]
     response.data = json.dumps(values)
     return response
+
+@app.route('/api/v1.0/debug', methods=['GET'])
+def get_debug():
+    session = db.session()
+    debugs = session.query(Debug).order_by(Debug.id.desc()).all()
+    values = [str(escape(str(debug))) for debug in debugs]
+    response = make_response()
+    response.data = '<br>'.join(values)
+    return response
+
+@app.route('/api/v1.0/debug', methods=['POST'])
+def update_debug():
+    data = request.get_data(as_text=True)
+
+    session = db.session()
+    session.add(Debug(message=data))
+    session.commit()
+
+    return jsonify({'success': True}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)

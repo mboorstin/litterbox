@@ -40,3 +40,12 @@ class Visit(Base):
             'exited_at': unix_time(self.exited_at),
             'duration': int((self.exited_at - self.entered_at).total_seconds()),
         }
+
+class Debug(Base):
+    __tablename__ = 'debug'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    timestamp = Column(DateTime, default=datetime.datetime.now)
+    message = Column(String)
+
+    def __str__(self):
+        return '%s: %s' % (self.timestamp.isoformat(), self.message)

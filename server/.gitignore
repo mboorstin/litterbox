@@ -1,0 +1,4 @@
+*.pyc
+sqlite.db
+nohup.out
+.DS_STORE

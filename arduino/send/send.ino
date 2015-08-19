@@ -34,7 +34,7 @@ void setup() {
 void loop()
 {
   Serial.println(getMeasurement());  // Output measurement
-  delay(50);
+  delay(1000);
 }
 
 int value; // This value will be populated
