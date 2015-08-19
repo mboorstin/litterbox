@@ -10,6 +10,7 @@ class Stall(Base):
     __tablename__ = 'stall'
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
+    address = Column(Integer)
 
     status = Column(Boolean)
     visits = relationship('Visit', lazy='dynamic', backref='stall')
@@ -18,6 +19,7 @@ class Stall(Base):
         return {
             'id': self.id,
             'name': self.name,
+            'address': self.address,
             'status': self.status,
         }
 

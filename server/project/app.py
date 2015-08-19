@@ -63,12 +63,12 @@ def update_stalls_from_raw():
     message_bytes = bytearray()
     message_bytes.extend(message_str)
     sender, status = sender_and_status(message_bytes)
-    stall_id = struct.unpack('>I', sender[4:])[0]
+    address = struct.unpack('>I', sender[4:])[0]
     # We're using pull up resistors on the XBee's
     status = not status
 
     session = db.session()
-    stall = session.query(Stall).get(stall_id)
+    stall = session.query(Stall).filter(address=address).first()
     if not stall:
         abort(400)
     if stall.status and not status:
@@ -77,7 +77,7 @@ def update_stalls_from_raw():
         stall.status = False
         session.commit()
     elif not stall.status and status:
-        session.add(Visit(stall_id=stall_id))
+        session.add(Visit(stall_id=stall.id))
         stall.status = True
         session.commit()
     return jsonify({'success': True}), 201
