@@ -1,10 +1,10 @@
 import datetime
 import json
 
-from flask import Flask, abort, jsonify, make_response, render_template, request
+from flask import Flask, abort, escape, jsonify, make_response, render_template, request
 from flask.ext.sqlalchemy import SQLAlchemy
 
-from models import Stall, Visit, Base
+from models import Debug, Stall, Visit, Base
 
 SECRET = '1234567890'
 
@@ -65,6 +65,24 @@ def get_visits(stall_id):
     values = [visit.to_json() for visit in visits]
     response.data = json.dumps(values)
     return response
+
+@app.route('/api/v1.0/debug', methods=['GET'])
+def get_debug():
+    session = db.session()
+    debugs = session.query(Debug).order_by(Debug.id.desc()).all()
+    values = [str(escape(str(debug))) for debug in debugs]
+    response = make_response()
+    response.data = '<br>'.join(values)
+    return response
+
+@app.route('/api/v1.0/debug', methods=['POST'])
+def update_debug():
+    data = request.get_data(as_text=True)
+
+    session = db.session()
+    session.add(Debug(message=data))
+    session.commit()
+    return jsonify({'success': True}), 201
 
 if __name__ == '__main__':
     app.run(debug=True)
