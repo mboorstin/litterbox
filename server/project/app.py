@@ -119,5 +119,13 @@ def update_debug():
 
     return jsonify({'success': True}), 201
 
+@app.route('/api/v1.0/debug', methods=['DELETE'])
+def clear_debug():
+    session = db.session()
+    session.query(Debug).delete(synchronize_session=False)
+    session.commit()
+
+    return jsonify({'success': True}), 201
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
