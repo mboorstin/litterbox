@@ -4,6 +4,7 @@ import XBee
 from urlparse import urlparse
 from httplib import HTTPConnection
 import json
+import base64
 
 url = "http://litterbox.moistcake.net/api/v1.0/stalls"
 # Not that the secret is being used right now...
@@ -29,4 +30,7 @@ while True:
         sender = str(message[3:11])
         if (sender not in old_status) or (status != old_status[sender]):
             print "Status changed to", status, "with sender", sender
+            # conn = HTTPConnection(urlparts.netloc, urlparts.port or 80)
+            data = json.dumps({'secret': '1234567890', 'stall_id': 1, 'status': status})
+            # conn.request("POST", urlparts.path, data, headers)
             old_status[sender] = status
