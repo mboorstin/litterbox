@@ -15,15 +15,10 @@ print "Connecting to Xbee..."
 xbee = serial.Serial("/dev/ttyUSB0", 9600)
 print "Connected to Xbee..."
 while True:
-    data = []
-    while True:
-        for c in xbee.read():
-            if ord(c) == 0x7E and len(data) > 1:
-                print data
-                conn = HTTPConnection(urlparts.netloc, urlparts.port or 80)
-                data = json.dumps({'raw_data': base64.b64encode(''.join(data))})
-                conn.request("POST", urlparts.path, data, headers)
-                data = []
-                break
-            else:
-                data.append(c)
+    # Yes, we're hardcoding the message length because this is for testing
+    data = xbee.read(23)
+    print data.encode("hex")
+    conn = HTTPConnection(urlparts.netloc, urlparts.port or 80)
+    print base64.b64encode(data)
+    data = json.dumps({'raw_data': base64.b64encode(data)})
+    conn.request("POST", urlparts.path, data, headers)

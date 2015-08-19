@@ -64,6 +64,8 @@ def update_stalls_from_raw():
     message_bytes.extend(message_str)
     sender, status = sender_and_status(message_bytes)
     stall_id = struct.unpack('>I', sender[4:])[0]
+    # We're using pull up resistors on the XBee's
+    status = not status
 
     session = db.session()
     stall = session.query(Stall).get(stall_id)
