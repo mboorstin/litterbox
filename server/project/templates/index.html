@@ -20,13 +20,13 @@
         <text class="map-title" x="15" y="100">
           B4
         </text>
-        <g id="map-b4-bathrooms"></g>
+		<g id="map-b4-bathrooms"></g>
       </svg>
       <h2 class="map-label">tupac</h2>
     </section>
 
     <footer>
-      <strong>litterbox</strong> // <a href="/stats">stats</a> · <a href="/api/v1.0/debug">debug</a> // brought to you by @poop-crew
+      <strong>litterbox</strong> // <a href="/stats">stats</a> · <a href="/api/v1.5/debug">debug</a> // brought to you by @poop-crew
     </footer>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
@@ -34,42 +34,43 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/jsx">
       var STALL_POSITIONS_BY_ID = {
-        1: { x: 10, y: 10 },
-        2: { x: 25, y: 10 },
-        3: { x: 60, y: 122 },
-        4: { x: 75, y: 122 },
-        5: { x: 60, y: 180 },
-        6: { x: 75, y: 180 }
+        1: { x: 6, y: 15 },
+        2: { x: 22, y: 15 },
+        3: { x: 61, y: 118 },
+        4: { x: 77, y: 118 },
+        5: { x: 61, y: 170 },
+        6: { x: 77, y: 170 }
       };
 
       function getStalls() {
         $.ajax({
           type: 'GET',
-          url: '/api/v1.0/stalls',
+          url: '/api/v1.5/stalls',
           dataType: 'json',
 
           success: function (stalls) {
             var container = document.getElementById("map-b4-bathrooms");
-            while (container.firstChild) {
-              container.removeChild(container.firstChild);
-            }
+			while (container.firstChild) {
+			  container.removeChild(container.lastChild);
+			}
 
             stalls.forEach(function (stall) {
-              var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-              var textContent = document.createTextNode(stall.status ? "busy" : "free");
-              console.log(textContent);
-
               var stallPosition = STALL_POSITIONS_BY_ID[stall.id];
 
-              text.setAttribute("x", stallPosition.x);
-              text.setAttribute("y", stallPosition.y);
-              text.appendChild(textContent);
-              container.appendChild(text);
+              var busyImage = document.createElementNS('http://www.w3.org/2000/svg','image');
+              var imageSrc = 'static/assets/' + (stall.status ? 'no_sync.svg' : 'sync.svg');
+			  busyImage.setAttributeNS(null, 'height', '16');
+			  busyImage.setAttributeNS(null, 'width', '16');
+			  busyImage.setAttributeNS('http://www.w3.org/1999/xlink','href',imageSrc);
+			  busyImage.setAttributeNS(null,'x',stallPosition.x);
+			  busyImage.setAttributeNS(null,'y',stallPosition.y);
+
+			  container.appendChild(busyImage);
             });
           }.bind(this),
 
           error: function (xhr, status, err) {
-            console.error("/api/v1.0/stalls", status, err.toString());
+            console.error("/api/v1.5/stalls", status, err.toString());
           }.bind(this)
         });
       }
