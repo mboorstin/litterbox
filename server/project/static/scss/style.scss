@@ -1,0 +1,66 @@
+@import "bourbon/bourbon";
+
+html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  @include display(flex);
+  @include flex-direction(column);
+
+  box-sizing: border-box;
+  font-family: consolas, 'source code pro', 'dejavu sans mono', monospace;
+  font-size: 12px;
+  height: 100%;
+  margin: 0;
+  padding: 0.6rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+.emoji {
+  font-family: arial, sans-serif;
+  font-size: .8em;
+}
+
+.map {
+  @include display(flex);
+  @include flex(1 0 450px);
+  @include flex-direction(column);
+
+  text-align: center;
+}
+
+.map-label {
+  @include flex(0 0 content);
+  margin: 0;
+  padding: 0;
+}
+
+.map-diagram {
+  @include flex(1 1);
+}
+
+footer {
+  @include flex(0 0 content);
+
+  color: #aaa;
+  font-size: 11px;
+  margin: 1rem 0 0;
+  text-align: center;
+}
+
+svg {
+  text {
+    font-size: 6px;
+  }
+
+  .map-title {
+    font-weight: bold;
+    font-size: 20px;
+  }
+}

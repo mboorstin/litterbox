@@ -1,89 +1,85 @@
 <!DOCTYPE html>
 <html>
   <head lang="en">
-    <meta charset="UTF-8">
-    <title>Flask React</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- styles -->
+
+    <title>litterbox</title>
+
+    <link rel="stylesheet" href="static/css/style.css">
   </head>
   <body>
-    <div class="container">
-      <h1>Flask React</h1>
-      <br>
-      <div id="content"></div>
-    </div>
-    <!-- scripts -->
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.0/react.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.12.0/JSXTransformer.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-	<script type="text/jsx">
-	/**
-	* @jsx React.DOM
-	*/
-	var Stalls = React.createClass({
-		getInitialState: function() {
-			return {data: []}
-		},
-		loadStallsFromServer: function() {
-			var stalls = $.ajax({
-				type: 'GET',
-				url: '/api/v1.0/stalls',
-				dataType: 'json',
-				success: function (data) {
-					this.setState({data: data});
-				}.bind(this),
-				error: function (xhr, status, err) {
-					console.error("/api/v1.0/stalls", status, err.toString());
-				}.bind(this)
-			});
-		},                
-		componentWillMount: function() {
-			this.loadStallsFromServer();
-			setInterval(this.loadStallsFromServer, this.props.pollInterval);
-		},
-		render: function() {
-			return (
-				<div className="stalls">
-				<h1>Stalls</h1>
-				<StallList data={this.state.data}/>
-				</div>
-				);
-		}
-	});
+    <section id="map-b4" class="map">
+      <h2 class="map-label">biggie <span class="emoji">⚾️</span></h2>
+      <svg class="map-diagram" viewBox="-3 -3 106 206" preserveAspectRatio="xMid yMid">
+        <path d="M 0 0 v 200 h 80 l 20 -20 v -160 l -20 -20 h -80 z" fill="transparent" stroke="black" />
+        <path d="M 100 75 h -50 v 40 h 50" fill="transparent" stroke="black" stroke-width="0.5" />
+        <text x="60" y="97">
+          tuck shop
+        </text>
+        <text class="map-title" x="15" y="100">
+          B4
+        </text>
+        <g id="map-b4-bathrooms"></g>
+      </svg>
+      <h2 class="map-label">tupac</h2>
+    </section>
 
-	var StallList = React.createClass({
-		render: function() {
-			var stalls = this.props.data.map(function(stall) {
-				return <Stall stall={stall}></Stall>;
-			});
+    <footer>
+      <strong>litterbox</strong> // <a href="/stats">stats</a> · <a href="/debug">debug</a> // brought to you by @poop-crew
+    </footer>
 
-			return (
-				<div className="StallList">
-					{stalls}
-				</div>
-			);
-		}
-	});
+<div id="test"></div>
 
-   var Stall = React.createClass({
-		render: function() {
-			var occupied = "Free";
-			if(this.props.stall.status){
-				occupied = "Occupied";
-			}
-			return (
-				<div className="Stall">
-				<h1>{this.props.stall.name}</h1>
-				<h2>{occupied}</h2>
-				</div>
-			);
-		}
-	});
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/jsx">
+      var STALL_POSITIONS_BY_ID = {
+        3: { x: 10, y: 10 },
+        4: { x: 25, y: 10 },
+        5: { x: 60, y: 122 },
+        6: { x: 75, y: 122 },
+        1087677805: { x: 60, y: 180 },
+        1087696936: { x: 75, y: 180 }
+      };
 
-	React.renderComponent(
-		<Stalls pollInterval={1000}></Stalls>,
-		document.getElementById('content')
-	);
-	</script>
+      function getStalls() {
+        $.ajax({
+          type: 'GET',
+          url: '/api/v1.0/stalls',
+          dataType: 'json',
+
+          success: function (stalls) {
+            var container = document.getElementById("map-b4-bathrooms");
+            while (container.firstChild) {
+              container.removeChild(container.firstChild);
+            }
+
+            stalls.forEach(function (stall) {
+              var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+              var textContent = document.createTextNode(stall.status ? "free" : "busy");
+              console.log(textContent);
+
+              var stallPosition = STALL_POSITIONS_BY_ID[stall.id];
+
+              text.setAttribute("x", stallPosition.x);
+              text.setAttribute("y", stallPosition.y);
+              text.appendChild(textContent);
+              container.appendChild(text);
+            });
+          }.bind(this),
+
+          error: function (xhr, status, err) {
+            console.error("/api/v1.0/stalls", status, err.toString());
+          }.bind(this)
+        });
+      }
+
+      $(function () {
+        getStalls();
+        setInterval(getStalls, 1000);
+      })
+    </script>
   </body>
 </html>

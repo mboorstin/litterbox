@@ -2,3 +2,4 @@
 sqlite.db
 nohup.out
 .DS_STORE
+project/static/.sass-cache

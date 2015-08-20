@@ -4,6 +4,7 @@ import base64
 import struct
 
 from flask import Flask, abort, escape, jsonify, make_response, render_template, request
+from flask.ext.scss import Scss
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from models import Debug, Stall, Visit, Base
@@ -14,6 +15,7 @@ SECRET = '1234567890'
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite+pysqlite:///sqlite.db'
 db = SQLAlchemy(app)
+Scss(app, asset_dir='assets/scss', static_dir='static/css')
 
 @app.route('/')
 def index():
