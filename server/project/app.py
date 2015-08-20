@@ -32,7 +32,6 @@ def get_stalls():
     return response
 
 @app.route('/api/v1.0/stalls', methods=['POST'])
-@app.route('/api/v1.5/stalls', methods=['POST'])
 def update_stalls():
     required = ['secret', 'stall_id', 'status']
     if not request.json or any(x not in request.json for x in required):
