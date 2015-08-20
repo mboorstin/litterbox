@@ -29,8 +29,6 @@
       <strong>litterbox</strong> // <a href="/stats">stats</a> · <a href="/debug">debug</a> // brought to you by @poop-crew
     </footer>
 
-<div id="test"></div>
-
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -58,7 +56,7 @@
 
             stalls.forEach(function (stall) {
               var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-              var textContent = document.createTextNode(stall.status ? "free" : "busy");
+              var textContent = document.createTextNode(stall.status ? "busy" : "free");
               console.log(textContent);
 
               var stallPosition = STALL_POSITIONS_BY_ID[stall.id];
