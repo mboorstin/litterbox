@@ -22,6 +22,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/api/v1.0/stalls', methods=['GET'])
+@app.route('/api/v1.5/stalls', methods=['GET'])
 def get_stalls():
     session = db.session()
     stalls = session.query(Stall).all()
@@ -31,6 +32,7 @@ def get_stalls():
     return response
 
 @app.route('/api/v1.0/stalls', methods=['POST'])
+@app.route('/api/v1.5/stalls', methods=['POST'])
 def update_stalls():
     required = ['secret', 'stall_id', 'status']
     if not request.json or any(x not in request.json for x in required):
@@ -43,7 +45,6 @@ def update_stalls():
     if not stall:
         abort(400)
     if stall.status and not request.json['status']:
-        print stall.visits.order_by(Visit.id.desc()).first().id
         stall.visits.order_by(Visit.id.desc()).first().exited_at = datetime.datetime.now()
         stall.status = request.json['status']
         session.commit()
@@ -60,7 +61,6 @@ def update_stalls_from_raw():
     required = ['raw_data']
     if not request.json or any(x not in request.json for x in required):
         abort(400)
-
     message_str = base64.b64decode(request.json['raw_data'])
     message_bytes = bytearray()
     message_bytes.extend(message_str)
@@ -74,7 +74,6 @@ def update_stalls_from_raw():
     if not stall:
         abort(400)
     if stall.status and not status:
-        print stall.visits.order_by(Visit.id.desc()).first().id
         stall.visits.order_by(Visit.id.desc()).first().exited_at = datetime.datetime.now()
         stall.status = False
         session.commit()
@@ -85,6 +84,7 @@ def update_stalls_from_raw():
     return jsonify({'success': True}), 201
 
 @app.route('/api/v1.0/stall/<stall_id>', methods=['GET'])
+@app.route('/api/v1.5/stall/<stall_id>', methods=['GET'])
 def get_visits(stall_id):
     try:
         stall_id = int(stall_id)
@@ -103,6 +103,7 @@ def get_visits(stall_id):
     return response
 
 @app.route('/api/v1.0/debug', methods=['GET'])
+@app.route('/api/v1.5/debug', methods=['GET'])
 def get_debug():
     session = db.session()
     debugs = session.query(Debug).order_by(Debug.id.desc()).all()
@@ -112,6 +113,7 @@ def get_debug():
     return response
 
 @app.route('/api/v1.0/debug', methods=['POST'])
+@app.route('/api/v1.5/debug', methods=['POST'])
 def update_debug():
     data = request.get_data(as_text=True)
 
@@ -122,6 +124,7 @@ def update_debug():
     return jsonify({'success': True}), 201
 
 @app.route('/api/v1.0/debug', methods=['DELETE'])
+@app.route('/api/v1.5/debug', methods=['DELETE'])
 def clear_debug():
     session = db.session()
     session.query(Debug).delete(synchronize_session=False)
