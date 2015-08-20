@@ -68,7 +68,7 @@ def update_stalls_from_raw():
     status = not status
 
     session = db.session()
-    stall = session.query(Stall).filter(address=address).first()
+    stall = session.query(Stall).filter_by(address=address).first()
     if not stall:
         abort(400)
     if stall.status and not status:
