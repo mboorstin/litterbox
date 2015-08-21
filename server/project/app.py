@@ -17,10 +17,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite+pysqlite:///sqlite.db'
 db = SQLAlchemy(app)
 Scss(app, asset_dir='assets/scss', static_dir='static/css')
 
-stats = {
-    'longest_poop': 0,
-}
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -85,7 +81,6 @@ def update_stalls_from_raw():
         stall.status = False
         visit = stall.visits.order_by(Visit.id.desc()).first()
         visit.exited_at = datetime.datetime.now()
-        stats['longest_poop'] = max(visit.duration, stats['longest_poop'])
         session.commit()
     elif not stall.status and status:
         session.add(Visit(stall_id=stall.id))
@@ -114,6 +109,17 @@ def get_visits(stall_id):
 
 @app.route('/api/v1.5/stats', methods=['GET'])
 def get_stats():
+    stats = {}
+    session = db.session()
+    visits = session.query(Visit).all()
+    visits = filter(lambda v: 15 < v.duration < 60*60, visits)
+    durations = [v.duration for v in visits]
+    stats['total_visits'] = len(visits)
+    stats['longest_time'] = max(durations)
+    try:
+        stats['average_time'] = sum(durations)/len(visits)
+    except ZeroDivisionError:
+        stats['average_time'] = 0
     return jsonify(stats), 200
 
 
