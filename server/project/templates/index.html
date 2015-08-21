@@ -10,6 +10,9 @@
   </head>
   <body>
     <section id="map-b4" class="map">
+	  <h2 class>Demo Door</h2>
+	  <div id="makerbot"></div>
+	  </br>
       <h2 class="map-label">biggie <span class="emoji">⚾️</span></h2>
       <svg class="map-diagram" viewBox="-3 -3 106 206" preserveAspectRatio="xMid yMid">
         <path d="M 0 0 v 200 h 80 l 20 -20 v -160 l -20 -20 h -80 z" fill="transparent" stroke="black" />
@@ -54,11 +57,32 @@
 			  container.removeChild(container.lastChild);
 			}
 
+
+			/* Counter is hacky hard coding for disabling Tupac stalls */
+			counter = 0
             stalls.forEach(function (stall) {
+				/* Hack for displaying makerbot information */
+				if(stall.id == 5) {
+					var makerbot = document.getElementById("makerbot");		
+					while (makerbot.firstChild) {
+					  makerbot.removeChild(makerbot.lastChild);
+					}
+					var img = $(document.createElement('img'))
+					img.attr('src', 'static/assets/' + (stall.status ? 'makerbot.png' : 'makerbot.svg'));
+					img.height(180);
+					img.width(180);
+					img.appendTo('#makerbot')
+				}
+			
               var stallPosition = STALL_POSITIONS_BY_ID[stall.id];
 
               var busyImage = document.createElementNS('http://www.w3.org/2000/svg','image');
-              var imageSrc = 'static/assets/' + (stall.status ? 'no_sync.svg' : 'sync.svg');
+			  if(counter > 3){
+				  var imageSrc = 'static/assets/no_sync.svg';
+			  }
+			  else {
+				  var imageSrc = 'static/assets/' + (stall.status ? 'syncing.svg' : 'sync.svg');
+			  }
 			  busyImage.setAttributeNS(null, 'height', '16');
 			  busyImage.setAttributeNS(null, 'width', '16');
 			  busyImage.setAttributeNS('http://www.w3.org/1999/xlink','href',imageSrc);
@@ -66,6 +90,7 @@
 			  busyImage.setAttributeNS(null,'y',stallPosition.y);
 
 			  container.appendChild(busyImage);
+			  counter = counter + 1;
             });
           }.bind(this),
 
